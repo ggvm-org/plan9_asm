@@ -1,7 +1,11 @@
 [package]
 name = "plan9_asm"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
+repository = "https://github.com/ggvm-org/plan9_asm"
+keywords = ["plan9", "assembly"]
+readme = "README.md"
+categories = ["embedded"]
 description = "Plan9 Assembly wrapper"
 license = "MIT OR Apache-2.0"
 
