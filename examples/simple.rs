@@ -1,9 +1,9 @@
-use plan9_asm::{operand, register_with_offset, Directive::Nop, ADDQ, JLS, JMP};
+use plan9_asm::{operand, register_with_offset, Directive::Nop, ADDQ, CMPQ, JLS, JMP};
 
 fn main() {
     let x: u32 = 1;
     let jmp_to = "somewhere";
-    println!("{}", JLS!(33));
+    println!("{}", JLS!(33 as i64));
     println!("{}", JLS!(@body));
     println!("{}", JLS!(x));
     println!("{}", JLS!(jmp_to));
@@ -18,4 +18,6 @@ fn main() {
     println!("{}", operand!(1));
 
     println!("{}", Nop);
+
+    println!("{}", CMPQ!(SP, 16=>R14));
 }
