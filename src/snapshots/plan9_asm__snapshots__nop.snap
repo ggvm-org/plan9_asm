@@ -1,0 +1,7 @@
+---
+source: src/lib.rs
+assertion_line: 249
+expression: directive!(NOP)
+
+---
+NOP

@@ -1,0 +1,7 @@
+---
+source: src/lib.rs
+assertion_line: 250
+expression: CALL!(main.run)
+
+---
+CALL    main·run(SB)

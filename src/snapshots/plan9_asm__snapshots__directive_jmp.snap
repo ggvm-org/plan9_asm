@@ -1,0 +1,7 @@
+---
+source: src/lib.rs
+assertion_line: 245
+expression: directive!(JMP 2)
+
+---
+JMP	2

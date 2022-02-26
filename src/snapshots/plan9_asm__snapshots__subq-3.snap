@@ -1,0 +1,7 @@
+---
+source: src/lib.rs
+assertion_line: 277
+expression: "SUBQ!(1, 16 => AX)"
+
+---
+SUBQ	$1, 16(AX)

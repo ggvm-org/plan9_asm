@@ -1,0 +1,7 @@
+---
+source: src/lib.rs
+assertion_line: 260
+expression: JLS!(@ body)
+
+---
+JLS	body
