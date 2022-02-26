@@ -1,4 +1,4 @@
-use plan9_asm::{operand, register_with_offset, Directive::Nop, ADDQ, CMPQ, JLS, JMP};
+use plan9_asm::{directive, operand, register_with_offset, Directive::Nop, ADDQ, CMPQ, JLS, JMP};
 
 fn main() {
     let x: u32 = 1;
@@ -20,4 +20,5 @@ fn main() {
     println!("{}", Nop);
 
     println!("{}", CMPQ!(SP, 16=>R14));
+    println!("{}", directive!(@body));
 }

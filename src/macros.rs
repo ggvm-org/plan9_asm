@@ -19,7 +19,7 @@ macro_rules! directive {
         JMP!($target)
     };
     (@$label_name:ident) => {
-        Directive::Label(stringify!($label_name).to_string())
+       $crate::Directive::Label(std::stringify!($label_name).to_string())
     };
 }
 
@@ -185,7 +185,6 @@ macro_rules! JLS {
 
 #[cfg(test)]
 mod snapshots {
-    use super::*;
     use insta::assert_display_snapshot;
 
     macro_rules! insta_test {
