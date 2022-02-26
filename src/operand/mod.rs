@@ -64,18 +64,4 @@ macro_rules! operand {
     };
 }
 
-#[cfg(test)]
-mod snapshots {
-    use insta::assert_display_snapshot;
-
-    macro_rules! insta_test {
-        ($testname:ident: $($testcases:expr),+) => {
-            #[test]
-            fn $testname() {
-                $(assert_display_snapshot!($testcases);)+
-            }
-        };
-    }
-
-    insta_test!(operand: operand!(AX), operand!(16=>SP), operand!(1));
-}
+snapshot_test!(operand: operand!(AX), operand!(16=>SP), operand!(1));

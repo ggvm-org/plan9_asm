@@ -1,6 +1,8 @@
 use std::fmt;
 
 use self::jmp_target::JmpTarget;
+#[macro_use]
+mod common;
 
 pub mod operand;
 pub mod register_with_offset;
