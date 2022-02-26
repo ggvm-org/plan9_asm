@@ -66,7 +66,6 @@ macro_rules! operand {
 
 #[cfg(test)]
 mod snapshots {
-    use super::*;
     use insta::assert_display_snapshot;
 
     macro_rules! insta_test {

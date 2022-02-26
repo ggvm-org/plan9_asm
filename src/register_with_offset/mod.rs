@@ -53,7 +53,6 @@ macro_rules! register_with_offset {
 
 #[cfg(test)]
 mod snapshots {
-    use super::*;
     use insta::assert_display_snapshot;
 
     macro_rules! insta_test {

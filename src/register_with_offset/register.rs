@@ -11,12 +11,12 @@ pub enum Register {
 
 impl fmt::Display for Register {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let s = match self {
-            &Self::AX => "AX",
-            &Self::CX => "CX",
-            &Self::SP => "SP",
-            &Self::BP => "BP",
-            &Self::R14 => "R14",
+        let s = match *self {
+            Self::AX => "AX",
+            Self::CX => "CX",
+            Self::SP => "SP",
+            Self::BP => "BP",
+            Self::R14 => "R14",
         };
         write!(f, "{s}")
     }
