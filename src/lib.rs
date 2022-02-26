@@ -1,16 +1,22 @@
 use std::fmt;
 
-use self::jmp_target::JmpTarget;
+pub use self::jmp_target::JmpTarget;
 #[macro_use]
 mod common;
 
+#[macro_use]
 pub mod operand;
+#[macro_use]
 pub mod register_with_offset;
 
 use operand::Operand;
 
 #[macro_use]
 pub mod jmp_target;
+
+pub use operand::*;
+pub use register_with_offset::*;
+pub use Directive::{Nop, Ret};
 
 #[derive(Debug, PartialEq)]
 pub enum Directive {
@@ -188,10 +194,10 @@ macro_rules! define_jmp_macro {
         #[macro_export]
         macro_rules! $macro_name {
             ($target:expr) => {
-                Directive::$variant(JmpTarget::from($target))
+                $crate::Directive::$variant($crate::jmp_target::JmpTarget::from($target))
             };
             (@$label:ident) => {
-                Directive::$variant($crate::jmp_target::JmpTarget::from(stringify!($label)))
+                $crate::Directive::$variant($crate::jmp_target::JmpTarget::from(stringify!($label)))
             };
         }
     };
