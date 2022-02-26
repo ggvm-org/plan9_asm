@@ -1,0 +1,7 @@
+---
+source: src/macros.rs
+assertion_line: 221
+expression: "ADDQ!(AX, 1)"
+
+---
+ADDQ	AX, $1

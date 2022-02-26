@@ -1,0 +1,7 @@
+---
+source: src/macros.rs
+assertion_line: 207
+expression: JMP!(33)
+
+---
+JMP	33

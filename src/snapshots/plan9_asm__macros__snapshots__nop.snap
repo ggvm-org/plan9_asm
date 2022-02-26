@@ -1,0 +1,7 @@
+---
+source: src/macros.rs
+assertion_line: 203
+expression: directive!(NOP)
+
+---
+NOP

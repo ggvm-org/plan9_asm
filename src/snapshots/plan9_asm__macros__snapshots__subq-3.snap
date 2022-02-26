@@ -1,0 +1,7 @@
+---
+source: src/macros.rs
+assertion_line: 231
+expression: "SUBQ!(1, 16 => AX)"
+
+---
+SUBQ	$1, 16(AX)

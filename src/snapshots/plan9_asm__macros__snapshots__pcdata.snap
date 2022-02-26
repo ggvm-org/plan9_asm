@@ -1,0 +1,7 @@
+---
+source: src/macros.rs
+assertion_line: 228
+expression: "PCDATA!(1, 2)"
+
+---
+PCDATA $1, $2

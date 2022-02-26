@@ -1,0 +1,7 @@
+---
+source: src/macros.rs
+assertion_line: 214
+expression: JLS!(33)
+
+---
+JLS	33

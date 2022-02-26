@@ -1,0 +1,7 @@
+---
+source: src/macros.rs
+assertion_line: 199
+expression: directive!(JMP @ body)
+
+---
+JMP	body
