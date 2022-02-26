@@ -34,7 +34,7 @@ impl From<Register> for RegisterWithOffset {
     }
 }
 
-#[macro_export]
+#[macro_export(local_inner_macros)]
 macro_rules! register_with_offset {
     // TODO: `=> $register_variant` to `($register_variant)`
     ($offset:expr => $register_variant:ident) => {

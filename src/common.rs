@@ -1,4 +1,4 @@
-#[macro_export]
+#[macro_export(local_inner_macros)]
 macro_rules! snapshot_test {
     ($($testname:ident: $($testcases:expr),+)+) => {
         #[cfg(test)]

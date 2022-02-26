@@ -51,7 +51,7 @@ impl_from_operand!(String => Ident);
 impl_from_operand!(RegisterWithOffset => RegisterWithOffset);
 impl_from_operand!(Register => RegisterWithOffset);
 
-#[macro_export]
+#[macro_export(local_inner_macros)]
 macro_rules! operand {
     ($offset:expr => $register_variant:ident) => {
         $crate::operand::Operand::RegisterWithOffset(crate::register_with_offset!($offset => $register_variant))

@@ -22,7 +22,7 @@ impl fmt::Display for Register {
     }
 }
 
-#[macro_export]
+#[macro_export(local_inner_macros)]
 macro_rules! register {
     ($variant:ident) => {
         Register::$variant
