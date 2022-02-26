@@ -1,3 +1,4 @@
 # plan9_asm
 
-This repo is under construction now.
+- [GitHub](https://github.com/ggvm-org/plan9_asm)
+- [crates.io](https://crates.io/crates/plan9_asm)
