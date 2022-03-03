@@ -1,7 +1,7 @@
 #[macro_export(local_inner_macros)]
 macro_rules! directives {
     ($($tt:tt)+) => {{
-        let mut d = Vec::new();
+        let mut d: Vec<Directive> = Vec::new();
         directives_inner!(d, $($tt)+);
         d
     }};
@@ -38,13 +38,52 @@ macro_rules! directives_inner {
         $directives.push(JLS!(@$target));
         directives_inner!($directives, $($rest)*)
     };
+
+    // ADDQ	[16(AX)], [16(SP)]
+    ($directives:ident, ADDQ [$($left:tt)+] , [$($right:tt)*]; $($rest:tt)*) => {{
+        let (left, right) = binary_op!([$($left)+], [$($right)+]);
+        $directives.push($crate::Directive::Addq(left, right));
+        directives_inner!($directives, $($rest)*);
+    }};
+
     ($directives:ident,) => {};
     () => {};
 }
 
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+macro_rules! binary_op {
+    ([$($left:tt)+] , [$($right:tt)*]) => {{
+        let left_op = new_operand!($($left)+);
+        let right_op = new_operand!($($right)*);
+       (left_op, right_op)
+    }};
+}
+
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+macro_rules! new_operand {
+    ($offset:tt($register_variant:ident)) => {
+        $crate::operand::Operand::RegisterWithOffset(new_register_with_offset!($offset(
+            $register_variant
+        )))
+    };
+}
+
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+macro_rules! new_register_with_offset {
+    ($offset:tt($register_variant:ident)) => {
+        $crate::register_with_offset::RegisterWithOffset {
+            offset: $offset,
+            register: $crate::register_with_offset::Register::$register_variant,
+        }
+    };
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::JmpTarget;
+    use crate::{operand::Operand, Directive, JmpTarget, RegisterWithOffset};
 
     #[test]
     fn directives_inner() {
@@ -81,6 +120,80 @@ mod tests {
         assert_eq!(
             directives!(JLS @body;),
             vec![crate::Directive::Jls(JmpTarget::Label("body".to_string()))]
+        );
+    }
+
+    #[test]
+    fn addq() {
+        assert_eq!(
+            directives!(ADDQ [16(SP)], [32(AX)];),
+            vec![Directive::Addq(
+                Operand::RegisterWithOffset(RegisterWithOffset {
+                    offset: 16,
+                    register: crate::Register::SP
+                }),
+                Operand::RegisterWithOffset(RegisterWithOffset {
+                    offset: 32,
+                    register: crate::Register::AX
+                })
+            )]
+        );
+
+        assert_eq!(
+            directives!(NOP; ADDQ [16(SP)], [32(AX)]; NOP;),
+            vec![
+                Directive::Nop,
+                Directive::Addq(
+                    Operand::RegisterWithOffset(RegisterWithOffset {
+                        offset: 16,
+                        register: crate::Register::SP
+                    }),
+                    Operand::RegisterWithOffset(RegisterWithOffset {
+                        offset: 32,
+                        register: crate::Register::AX
+                    })
+                ),
+                Directive::Nop,
+            ]
+        )
+    }
+
+    #[test]
+    fn binary_op() {
+        assert_eq!(
+            binary_op!([16(SP)], [32(AX)]),
+            (
+                Operand::RegisterWithOffset(RegisterWithOffset {
+                    offset: 16,
+                    register: crate::Register::SP
+                }),
+                Operand::RegisterWithOffset(RegisterWithOffset {
+                    offset: 32,
+                    register: crate::Register::AX
+                })
+            )
+        );
+    }
+
+    #[test]
+    fn new_operand() {
+        assert_eq!(
+            new_operand!(16(SP)),
+            Operand::RegisterWithOffset(crate::RegisterWithOffset {
+                offset: 16,
+                register: crate::Register::SP
+            })
+        );
+    }
+
+    #[test]
+    fn new_register_with_offset() {
+        assert_eq!(
+            new_register_with_offset!(16(SP)),
+            crate::RegisterWithOffset {
+                offset: 16,
+                register: crate::Register::SP
+            }
         );
     }
 }
