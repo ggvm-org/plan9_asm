@@ -12,6 +12,8 @@ pub mod register_with_offset;
 #[macro_use]
 pub mod macros;
 
+mod directives_macro;
+
 use operand::Operand;
 
 #[macro_use]

@@ -165,11 +165,19 @@ macro_rules! CALL {
 
 #[macro_export(local_inner_macros)]
 macro_rules! JMP {
-    ($target:expr) => {
-        $crate::Directive::Jmp($crate::jmp_target::JmpTarget::from($target))
+    ($($tt:tt)+) => {
+        $crate::Directive::Jmp(jmp_target!($($tt)+))
     };
+}
+
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+macro_rules! jmp_target {
     (@$label:ident) => {
-        $crate::Directive::Jmp($crate::jmp_target::JmpTarget::from(std::stringify!($label)))
+        $crate::jmp_target::JmpTarget::from(std::stringify!($label))
+    };
+    ($target:expr) => {
+        $crate::jmp_target::JmpTarget::from($target)
     };
 }
 
@@ -186,6 +194,8 @@ macro_rules! JLS {
 #[cfg(test)]
 mod snapshots {
     use insta::assert_display_snapshot;
+
+    use crate::JmpTarget;
 
     macro_rules! insta_test {
         ($testname:ident: $($testcases:expr),+) => {
@@ -234,4 +244,9 @@ mod snapshots {
         SUBQ!(1, 16=>AX),
         SUBQ!(16=>AX, 16=>SP)
     );
+
+    #[test]
+    fn assert() {
+        assert_eq!(jmp_target!(@body), JmpTarget::Label("body".to_string()))
+    }
 }
