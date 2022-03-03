@@ -171,6 +171,13 @@ macro_rules! JMP {
 }
 
 #[macro_export(local_inner_macros)]
+macro_rules! JLS {
+    ($($tt:tt)+) => {
+        $crate::Directive::Jls(jmp_target!($($tt)+))
+    };
+}
+
+#[macro_export(local_inner_macros)]
 #[doc(hidden)]
 macro_rules! jmp_target {
     (@$label:ident) => {
@@ -178,16 +185,6 @@ macro_rules! jmp_target {
     };
     ($target:expr) => {
         $crate::jmp_target::JmpTarget::from($target)
-    };
-}
-
-#[macro_export(local_inner_macros)]
-macro_rules! JLS {
-    ($target:expr) => {
-        $crate::Directive::Jls($crate::jmp_target::JmpTarget::from($target))
-    };
-    (@$label:ident) => {
-        $crate::Directive::Jls($crate::jmp_target::JmpTarget::from(std::stringify!($label)))
     };
 }
 

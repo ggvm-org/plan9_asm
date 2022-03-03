@@ -14,12 +14,28 @@ macro_rules! directives_inner {
         $directives.push($crate::Directive::Nop);
         directives_inner!($directives, $($rest)*)
     };
+
+    // TODO: refactorable?
     ($directives:ident, JMP $tt:expr; $($rest:tt)*) => {
         $directives.push(JMP!($tt));
         directives_inner!($directives, $($rest)*)
     };
     ($directives:ident, JMP @$target:ident; $($rest:tt)*) => {
         $directives.push(JMP!(@$target));
+        directives_inner!($directives, $($rest)*)
+    };
+    // ($directives:ident, JMP $($tt:tt)+; $($rest:tt)*) => {
+    //     $directives.push(JMP!($($tt)+));
+    //     directives_inner!($directives, $($rest)*)
+    // };
+
+    // TODO: refactorable?
+    ($directives:ident, JLS $tt:expr; $($rest:tt)*) => {
+        $directives.push(JLS!($tt));
+        directives_inner!($directives, $($rest)*)
+    };
+    ($directives:ident, JLS @$target:ident; $($rest:tt)*) => {
+        $directives.push(JLS!(@$target));
         directives_inner!($directives, $($rest)*)
     };
     ($directives:ident,) => {};
@@ -52,6 +68,19 @@ mod tests {
                 crate::Directive::Jmp(JmpTarget::Addr(1)),
                 crate::Directive::Jmp(JmpTarget::Label("body".to_string()))
             ]
+        );
+    }
+
+    #[test]
+    fn jls() {
+        assert_eq!(
+            directives!(JLS 1;),
+            vec![crate::Directive::Jls(JmpTarget::Addr(1))]
+        );
+
+        assert_eq!(
+            directives!(JLS @body;),
+            vec![crate::Directive::Jls(JmpTarget::Label("body".to_string()))]
         );
     }
 }
