@@ -53,6 +53,13 @@ macro_rules! directives_inner {
         directives_inner!($directives, $($rest)*);
     }};
 
+    // CMPQ	[16(AX)], [16(SP)]
+    ($directives:ident, CMPQ [$($left:tt)+] , [$($right:tt)*]; $($rest:tt)*) => {{
+        let (left, right) = binary_op!([$($left)+], [$($right)+]);
+        $directives.push($crate::Directive::Cmpq(left, right));
+        directives_inner!($directives, $($rest)*);
+    }};
+
     // PCDATA #0, #-2
     ($directives:ident, PCDATA #$left:expr, #$right:expr; $($rest:tt)*) => {{
         $directives.push($crate::Directive::PCData(operand!($left), operand!($right)));
@@ -99,8 +106,8 @@ macro_rules! new_operand {
             $register_variant
         )))
     };
-    ($register:ident) => {
-        $crate::operand::Operand::Re($lit)
+    ($register_variant:ident) => {
+        $crate::operand::Operand::RegisterWithOffset(new_register_with_offset!($register_variant))
     };
     ($lit:expr) => {
         $crate::operand::Operand::from($lit)
@@ -278,6 +285,25 @@ mod tests {
                 },
                 Directive::Nop
             ]
+        )
+    }
+
+    #[test]
+    fn goroutine_epilogue() {
+        assert_eq!(
+            directives!(
+                CMPQ [SP], [16(R14)];
+            ),
+            vec![Directive::Cmpq(
+                Operand::RegisterWithOffset(RegisterWithOffset {
+                    register: crate::Register::SP,
+                    offset: 0
+                }),
+                Operand::RegisterWithOffset(RegisterWithOffset {
+                    register: crate::Register::R14,
+                    offset: 16
+                }),
+            )]
         )
     }
 
