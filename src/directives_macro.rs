@@ -73,6 +73,13 @@ macro_rules! directives_inner {
         directives_inner!($directives, $($rest)*);
     }};
 
+    // @body:
+    ($directives:ident, @ $label_name:ident : $($rest:tt)*) => {{
+        let label_name = std::stringify!($label_name).to_string();
+        $directives.push(Directive::Label(label_name));
+        directives_inner!($directives, $($rest)*);
+    }};
+
     ($directives:ident,) => {};
     () => {};
 }
@@ -289,7 +296,7 @@ mod tests {
     }
 
     #[test]
-    fn goroutine_epilogue() {
+    fn cmpq() {
         assert_eq!(
             directives!(
                 CMPQ [SP], [16(R14)];
@@ -304,6 +311,20 @@ mod tests {
                     offset: 16
                 }),
             )]
+        )
+    }
+
+    #[test]
+    fn label() {
+        assert_eq!(
+            directives!(
+                JMP @epi;
+                @epi:
+            ),
+            vec![
+                Directive::Jmp(JmpTarget::Label("epi".to_string())),
+                Directive::Label("epi".to_string())
+            ]
         )
     }
 
