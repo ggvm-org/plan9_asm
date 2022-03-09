@@ -99,6 +99,9 @@ macro_rules! new_operand {
             $register_variant
         )))
     };
+    ($register:ident) => {
+        $crate::operand::Operand::Re($lit)
+    };
     ($lit:expr) => {
         $crate::operand::Operand::from($lit)
     };
@@ -110,6 +113,12 @@ macro_rules! new_register_with_offset {
     ($offset:tt($register_variant:ident)) => {
         $crate::register_with_offset::RegisterWithOffset {
             offset: $offset,
+            register: $crate::register_with_offset::Register::$register_variant,
+        }
+    };
+    ($register_variant:ident) => {
+        $crate::register_with_offset::RegisterWithOffset {
+            offset: 0,
             register: $crate::register_with_offset::Register::$register_variant,
         }
     };
@@ -300,6 +309,14 @@ mod tests {
             new_register_with_offset!(16(SP)),
             crate::RegisterWithOffset {
                 offset: 16,
+                register: crate::Register::SP
+            }
+        );
+
+        assert_eq!(
+            new_register_with_offset!(SP),
+            crate::RegisterWithOffset {
+                offset: 0,
                 register: crate::Register::SP
             }
         );
