@@ -9,5 +9,5 @@ Just run `cargo run --example simple`
 
 ```toml
 [dependencies]
-plan9_asm = "0.2"
+plan9_asm = "0.3"
 ```
