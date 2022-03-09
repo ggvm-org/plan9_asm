@@ -80,6 +80,13 @@ macro_rules! directives_inner {
         directives_inner!($directives, $($rest)*);
     }};
 
+    // TEXT main.run
+    ($directives:ident, TEXT $package:ident . $name:ident; $($rest:tt)*) => {{
+        let text_directive = text_inner!($package.$name);
+        $directives.push(text_directive);
+        directives_inner!($directives, $($rest)*);
+    }};
+
     // @body:
     ($directives:ident, @ $label_name:ident : $($rest:tt)*) => {{
         let label_name = std::stringify!($label_name).to_string();
@@ -123,6 +130,17 @@ macro_rules! jls_inner {
 macro_rules! call_inner {
     ($package:ident.$name:ident) => {
         $crate::Directive::Call {
+            package: std::stringify!($package).to_string(),
+            name: std::stringify!($name).to_string(),
+        }
+    };
+}
+
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+macro_rules! text_inner {
+    ($package:ident.$name:ident) => {
+        $crate::Directive::Text {
             package: std::stringify!($package).to_string(),
             name: std::stringify!($name).to_string(),
         }
@@ -323,6 +341,23 @@ mod tests {
                 Directive::Call {
                     package: "runtime".to_string(),
                     name: "morestack_noctxt".to_string(),
+                },
+                Directive::Nop
+            ]
+        )
+    }
+
+    #[test]
+    fn text() {
+        assert_eq!(
+            directives!(
+                TEXT main.run;
+                NOP;
+            ),
+            vec![
+                Directive::Text {
+                    package: "main".to_string(),
+                    name: "run".to_string(),
                 },
                 Directive::Nop
             ]
