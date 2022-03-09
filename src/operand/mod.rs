@@ -50,18 +50,3 @@ impl_from_operand!(&str => Ident);
 impl_from_operand!(String => Ident);
 impl_from_operand!(RegisterWithOffset => RegisterWithOffset);
 impl_from_operand!(Register => RegisterWithOffset);
-
-#[macro_export(local_inner_macros)]
-macro_rules! operand {
-    ($offset:expr => $register_variant:ident) => {
-        $crate::operand::Operand::RegisterWithOffset($crate::register_with_offset!($offset => $register_variant))
-    };
-    ($register:ident) => {
-       $crate::operand::Operand::RegisterWithOffset($crate::register_with_offset!($register))
-    };
-    ($expr:expr) => {
-        $crate::operand::Operand::from($expr)
-    };
-}
-
-snapshot_test!(operand: operand!(AX), operand!(16=>SP), operand!(1));

@@ -1,7 +1,0 @@
----
-source: src/macros.rs
-assertion_line: 201
-expression: directive!(CALL main.run)
-
----
-CALL    main·run(SB)

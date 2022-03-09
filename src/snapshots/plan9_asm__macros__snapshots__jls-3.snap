@@ -1,7 +1,0 @@
----
-source: src/macros.rs
-assertion_line: 214
-expression: JLS!(TEST_JMP_TARGET_VAR)
-
----
-JLS	AAAAA

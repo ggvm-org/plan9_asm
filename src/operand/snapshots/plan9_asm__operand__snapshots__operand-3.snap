@@ -1,7 +1,0 @@
----
-source: src/operand/mod.rs
-assertion_line: 81
-expression: operand!(1)
-
----
-$1

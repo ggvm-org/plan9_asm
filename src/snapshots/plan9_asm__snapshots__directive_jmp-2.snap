@@ -1,7 +1,0 @@
----
-source: src/lib.rs
-assertion_line: 245
-expression: directive!(JMP @ body)
-
----
-JMP	body

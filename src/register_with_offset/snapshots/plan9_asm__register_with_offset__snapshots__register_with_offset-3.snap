@@ -1,7 +1,0 @@
----
-source: src/register_with_offset/mod.rs
-assertion_line: 70
-expression: register_with_offset!(TEST_OFFSET => SP)
-
----
-10(SP)

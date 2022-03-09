@@ -1,7 +1,0 @@
----
-source: src/macros.rs
-assertion_line: 204
-expression: CALL!(main.run)
-
----
-CALL    main·run(SB)

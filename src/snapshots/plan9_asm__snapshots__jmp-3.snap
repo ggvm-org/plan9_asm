@@ -1,7 +1,0 @@
----
-source: src/lib.rs
-assertion_line: 253
-expression: JMP!(TEST_JMP_TARGET_VAR)
-
----
-JMP	AAAAA

@@ -1,7 +1,0 @@
----
-source: src/lib.rs
-assertion_line: 267
-expression: "ADDQ!(AX, 1)"
-
----
-ADDQ	AX, $1

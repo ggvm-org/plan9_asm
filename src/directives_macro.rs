@@ -17,25 +17,25 @@ macro_rules! directives_inner {
 
     // TODO: refactorable?
     ($directives:ident, JMP $tt:expr; $($rest:tt)*) => {
-        $directives.push(JMP!($tt));
+        $directives.push(jmp_inner!($tt));
         directives_inner!($directives, $($rest)*)
     };
     ($directives:ident, JMP @$target:ident; $($rest:tt)*) => {
-        $directives.push(JMP!(@$target));
+        $directives.push(jmp_inner!(@$target));
         directives_inner!($directives, $($rest)*)
     };
     // ($directives:ident, JMP $($tt:tt)+; $($rest:tt)*) => {
-    //     $directives.push(JMP!($($tt)+));
+    //     $directives.push(jmp_inner($($tt)+));
     //     directives_inner!($directives, $($rest)*)
     // };
 
     // TODO: refactorable?
     ($directives:ident, JLS $tt:expr; $($rest:tt)*) => {
-        $directives.push(JLS!($tt));
+        $directives.push(jls_inner!($tt));
         directives_inner!($directives, $($rest)*)
     };
     ($directives:ident, JLS @$target:ident; $($rest:tt)*) => {
-        $directives.push(JLS!(@$target));
+        $directives.push(jls_inner!(@$target));
         directives_inner!($directives, $($rest)*)
     };
 
@@ -62,7 +62,7 @@ macro_rules! directives_inner {
 
     // PCDATA #0, #-2
     ($directives:ident, PCDATA #$left:expr, #$right:expr; $($rest:tt)*) => {{
-        $directives.push($crate::Directive::PCData(operand!($left), operand!($right)));
+        $directives.push($crate::Directive::PCData(new_operand!($left), new_operand!($right)));
         directives_inner!($directives, $($rest)*);
     }};
 
@@ -82,6 +82,33 @@ macro_rules! directives_inner {
 
     ($directives:ident,) => {};
     () => {};
+}
+
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+macro_rules! jmp_inner {
+    ($($tt:tt)+) => {
+        $crate::Directive::Jmp(jmp_target!($($tt)+))
+    };
+}
+
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+macro_rules! jmp_target {
+    (@$label:ident) => {
+        $crate::jmp_target::JmpTarget::from(std::stringify!($label))
+    };
+    ($target:expr) => {
+        $crate::jmp_target::JmpTarget::from($target)
+    };
+}
+
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+macro_rules! jls_inner {
+    ($($tt:tt)+) => {
+        $crate::Directive::Jls(jmp_target!($($tt)+))
+    };
 }
 
 #[macro_export(local_inner_macros)]

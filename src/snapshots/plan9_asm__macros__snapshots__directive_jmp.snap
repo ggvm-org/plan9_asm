@@ -1,7 +1,0 @@
----
-source: src/macros.rs
-assertion_line: 199
-expression: directive!(JMP 2)
-
----
-JMP	2
