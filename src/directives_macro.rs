@@ -60,6 +60,13 @@ macro_rules! directives_inner {
         directives_inner!($directives, $($rest)*);
     }};
 
+    // MOVQ	[16(AX)], [16(SP)]
+    ($directives:ident, MOVQ [$($left:tt)+] , [$($right:tt)*]; $($rest:tt)*) => {{
+        let (left, right) = binary_op!([$($left)+], [$($right)+]);
+        $directives.push($crate::Directive::Movq(left, right));
+        directives_inner!($directives, $($rest)*);
+    }};
+
     // PCDATA #0, #-2
     ($directives:ident, PCDATA #$left:expr, #$right:expr; $($rest:tt)*) => {{
         $directives.push($crate::Directive::PCData(new_operand!($left), new_operand!($right)));
@@ -329,6 +336,25 @@ mod tests {
                 CMPQ [SP], [16(R14)];
             ),
             vec![Directive::Cmpq(
+                Operand::RegisterWithOffset(RegisterWithOffset {
+                    register: crate::Register::SP,
+                    offset: 0
+                }),
+                Operand::RegisterWithOffset(RegisterWithOffset {
+                    register: crate::Register::R14,
+                    offset: 16
+                }),
+            )]
+        )
+    }
+
+    #[test]
+    fn movq() {
+        assert_eq!(
+            directives!(
+                MOVQ [SP], [16(R14)];
+            ),
+            vec![Directive::Movq(
                 Operand::RegisterWithOffset(RegisterWithOffset {
                     register: crate::Register::SP,
                     offset: 0
