@@ -15,6 +15,11 @@ macro_rules! directives_inner {
         directives_inner!($directives, $($rest)*)
     };
 
+    ($directives:ident, RET; $($rest:tt)*) => {
+        $directives.push($crate::Directive::Ret);
+        directives_inner!($directives, $($rest)*)
+    };
+
     // TODO: refactorable?
     ($directives:ident, JMP $tt:expr; $($rest:tt)*) => {
         $directives.push(jmp_inner!($tt));
@@ -217,6 +222,11 @@ mod tests {
                 crate::Directive::Jmp(JmpTarget::Label("body".to_string()))
             ]
         );
+    }
+
+    #[test]
+    fn ret() {
+        assert_eq!(directives!(RET;), vec![crate::Directive::Ret]);
     }
 
     #[test]
