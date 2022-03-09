@@ -284,6 +284,17 @@ mod tests {
         );
 
         assert_eq!(
+            directives!(SUBQ [10000], [SP];),
+            vec![Directive::Subq(
+                Operand::Int(10000),
+                Operand::RegisterWithOffset(RegisterWithOffset {
+                    offset: 0,
+                    register: crate::Register::SP
+                })
+            )]
+        );
+
+        assert_eq!(
             directives!(NOP; SUBQ [16(SP)], [32(AX)]; NOP;),
             vec![
                 Directive::Nop,
@@ -436,6 +447,8 @@ mod tests {
                 register: crate::Register::SP
             })
         );
+
+        assert_eq!(new_operand!(16), Operand::Int(16));
     }
 
     #[test]
