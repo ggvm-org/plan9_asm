@@ -1,7 +1,7 @@
 #[macro_export(local_inner_macros)]
 macro_rules! directives {
     ($($tt:tt)+) => {{
-        let mut d: Vec<Directive> = Vec::new();
+        let mut d: Vec<$crate::Directive> = Vec::new();
         directives_inner!(d, $($tt)+);
         d
     }};
@@ -76,7 +76,7 @@ macro_rules! directives_inner {
     // @body:
     ($directives:ident, @ $label_name:ident : $($rest:tt)*) => {{
         let label_name = std::stringify!($label_name).to_string();
-        $directives.push(Directive::Label(label_name));
+        $directives.push($crate::Directive::Label(label_name));
         directives_inner!($directives, $($rest)*);
     }};
 
