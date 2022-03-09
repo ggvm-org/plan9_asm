@@ -46,6 +46,13 @@ macro_rules! directives_inner {
         directives_inner!($directives, $($rest)*);
     }};
 
+    // SUBQ	[16(AX)], [16(SP)]
+    ($directives:ident, SUBQ [$($left:tt)+] , [$($right:tt)*]; $($rest:tt)*) => {{
+        let (left, right) = binary_op!([$($left)+], [$($right)+]);
+        $directives.push($crate::Directive::Subq(left, right));
+        directives_inner!($directives, $($rest)*);
+    }};
+
     // PCDATA #0, #-2
     ($directives:ident, PCDATA #$left:expr, #$right:expr; $($rest:tt)*) => {{
         $directives.push($crate::Directive::PCData(operand!($left), operand!($right)));
@@ -152,6 +159,41 @@ mod tests {
             vec![
                 Directive::Nop,
                 Directive::Addq(
+                    Operand::RegisterWithOffset(RegisterWithOffset {
+                        offset: 16,
+                        register: crate::Register::SP
+                    }),
+                    Operand::RegisterWithOffset(RegisterWithOffset {
+                        offset: 32,
+                        register: crate::Register::AX
+                    })
+                ),
+                Directive::Nop,
+            ]
+        )
+    }
+
+    #[test]
+    fn subq() {
+        assert_eq!(
+            directives!(SUBQ [16(SP)], [32(AX)];),
+            vec![Directive::Subq(
+                Operand::RegisterWithOffset(RegisterWithOffset {
+                    offset: 16,
+                    register: crate::Register::SP
+                }),
+                Operand::RegisterWithOffset(RegisterWithOffset {
+                    offset: 32,
+                    register: crate::Register::AX
+                })
+            )]
+        );
+
+        assert_eq!(
+            directives!(NOP; SUBQ [16(SP)], [32(AX)]; NOP;),
+            vec![
+                Directive::Nop,
+                Directive::Subq(
                     Operand::RegisterWithOffset(RegisterWithOffset {
                         offset: 16,
                         register: crate::Register::SP
