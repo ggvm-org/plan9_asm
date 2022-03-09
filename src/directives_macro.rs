@@ -58,8 +58,27 @@ macro_rules! directives_inner {
         $directives.push($crate::Directive::PCData(operand!($left), operand!($right)));
         directives_inner!($directives, $($rest)*);
     }};
+
+    // CALL runtime.morestack_noctxt;
+    ($directives:ident, CALL $package:ident . $name:ident; $($rest:tt)*) => {{
+        let call_directive = call_inner!($package.$name);
+        $directives.push(call_directive);
+        directives_inner!($directives, $($rest)*);
+    }};
+
     ($directives:ident,) => {};
     () => {};
+}
+
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+macro_rules! call_inner {
+    ($package:ident.$name:ident) => {
+        $crate::Directive::Call {
+            package: std::stringify!($package).to_string(),
+            name: std::stringify!($name).to_string(),
+        }
+    };
 }
 
 #[macro_export(local_inner_macros)]
@@ -234,6 +253,34 @@ mod tests {
                 })
             )
         );
+    }
+
+    #[test]
+    fn call() {
+        assert_eq!(
+            directives!(
+                CALL runtime.morestack_noctxt;
+                NOP;
+            ),
+            vec![
+                Directive::Call {
+                    package: "runtime".to_string(),
+                    name: "morestack_noctxt".to_string(),
+                },
+                Directive::Nop
+            ]
+        )
+    }
+
+    #[test]
+    fn call_inner() {
+        assert_eq!(
+            call_inner!(runtime.morestack_noctxt),
+            Directive::Call {
+                package: "runtime".to_string(),
+                name: "morestack_noctxt".to_string()
+            }
+        )
     }
 
     #[test]
