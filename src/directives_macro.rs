@@ -46,6 +46,11 @@ macro_rules! directives_inner {
         directives_inner!($directives, $($rest)*);
     }};
 
+    // PCDATA #0, #-2
+    ($directives:ident, PCDATA #$left:expr, #$right:expr; $($rest:tt)*) => {{
+        $directives.push($crate::Directive::PCData(operand!($left), operand!($right)));
+        directives_inner!($directives, $($rest)*);
+    }};
     ($directives:ident,) => {};
     () => {};
 }
@@ -67,6 +72,9 @@ macro_rules! new_operand {
         $crate::operand::Operand::RegisterWithOffset(new_register_with_offset!($offset(
             $register_variant
         )))
+    };
+    ($lit:expr) => {
+        $crate::operand::Operand::from($lit)
     };
 }
 
@@ -158,6 +166,17 @@ mod tests {
         )
     }
 
+    #[test]
+    fn pcdata() {
+        let right = -2;
+        assert_eq!(
+            directives!(PCDATA #0, #right; NOP;),
+            vec![
+                Directive::PCData(Operand::Int(0), Operand::Int(right)),
+                Directive::Nop,
+            ]
+        )
+    }
     #[test]
     fn binary_op() {
         assert_eq!(
