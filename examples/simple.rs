@@ -1,24 +1,23 @@
-use plan9_asm::{directive, operand, register_with_offset, Directive::Nop, ADDQ, CMPQ, JLS, JMP};
-
+use plan9_asm::directives;
 fn main() {
     let x: u32 = 1;
     let jmp_to = "somewhere";
-    println!("{}", JLS!(33 as i64));
-    println!("{}", JLS!(@body));
-    println!("{}", JLS!(x));
-    println!("{}", JLS!(jmp_to));
 
-    println!("{}", JMP!(33));
+    let directives = directives!(
+        JLS 33;
+        JLS @body;
+        JLS x;
+        JLS jmp_to;
 
-    println!("{}", register_with_offset!(AX));
-    println!("{}", register_with_offset!(16=>AX));
+        JMP 33;
 
-    println!("{}", ADDQ!(AX, SP));
-    println!("{}", operand!(AX));
-    println!("{}", operand!(1));
+        ADDQ [AX], [SP];
+        SUBQ [16(AX)], [22(R14)];
+        NOP;
 
-    println!("{}", Nop);
+        @body:
 
-    println!("{}", CMPQ!(SP, 16=>R14));
-    println!("{}", directive!(@body));
+        CALL  runtime.morestack_noctxt;
+    );
+    println!("{:?}", directives);
 }
