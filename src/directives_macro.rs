@@ -86,8 +86,15 @@ macro_rules! directives_inner {
     }};
 
     // TEXT main.run
-    ($directives:ident, TEXT $package:ident . $name:ident; $($rest:tt)*) => {{
-        let text_directive = text_inner!($package.$name);
+    ($directives:ident, TEXT $package:ident . $name:ident ; $($rest:tt)*) => {{
+        let text_directive = text_inner!($package . $name);
+        $directives.push(text_directive);
+        directives_inner!($directives, $($rest)*);
+    }};
+
+    // TEXT main.run
+    ($directives:ident, TEXT {$package:expr} . {$name:expr} ; $($rest:tt)*) => {{
+        let text_directive = text_inner!({$package} . {$name});
         $directives.push(text_directive);
         directives_inner!($directives, $($rest)*);
     }};
@@ -144,12 +151,16 @@ macro_rules! call_inner {
 #[macro_export(local_inner_macros)]
 #[doc(hidden)]
 macro_rules! text_inner {
-    ($package:ident.$name:ident) => {
-        $crate::Directive::Text {
-            package: std::stringify!($package).to_string(),
-            name: std::stringify!($name).to_string(),
-        }
-    };
+    ($package:ident . $func:ident) => {{
+        let package = std::stringify!($package).to_string();
+        let name = std::stringify!($func).to_string();
+        $crate::Directive::Text { package, name }
+    }};
+    ({$package:expr} . {$func:expr}) => {{
+        let package = $package.to_string();
+        let name = $func.to_string();
+        $crate::Directive::Text { package, name }
+    }};
 }
 
 #[macro_export(local_inner_macros)]
@@ -382,6 +393,43 @@ mod tests {
                 },
                 Directive::Nop
             ]
+        );
+
+        let package = "sub";
+        let name = "aux";
+        assert_eq!(
+            directives!(
+                TEXT {package}.{name};
+                NOP;
+            ),
+            vec![
+                Directive::Text {
+                    package: "sub".to_string(),
+                    name: "aux".to_string(),
+                },
+                Directive::Nop
+            ]
+        );
+    }
+
+    #[test]
+    fn text_inner() {
+        assert_eq!(
+            text_inner!(main.run),
+            Directive::Text {
+                package: "main".to_string(),
+                name: "run".to_string(),
+            },
+        );
+
+        let package = "sub";
+        let name = "aux";
+        assert_eq!(
+            text_inner!({package}.{name}),
+            Directive::Text {
+                package: "sub".to_string(),
+                name: "aux".to_string(),
+            },
         )
     }
 
