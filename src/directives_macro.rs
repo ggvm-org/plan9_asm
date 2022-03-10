@@ -85,6 +85,13 @@ macro_rules! directives_inner {
         directives_inner!($directives, $($rest)*);
     }};
 
+    // CALL runtime.morestack_noctxt;
+    ($directives:ident, CALL {$package:expr} . {$name:expr}; $($rest:tt)*) => {{
+        let call_directive = call_inner!({$package} . {$name});
+        $directives.push(call_directive);
+        directives_inner!($directives, $($rest)*);
+    }};
+
     // TEXT main.run
     ($directives:ident, TEXT $package:ident . $name:ident ; $($rest:tt)*) => {{
         let text_directive = text_inner!($package . $name);
@@ -146,6 +153,12 @@ macro_rules! call_inner {
             name: std::stringify!($name).to_string(),
         }
     };
+
+    ({$package:expr} . {$func:expr}) => {{
+        let package = $package.to_string();
+        let name = $func.to_string();
+        $crate::Directive::Call { package, name }
+    }};
 }
 
 #[macro_export(local_inner_macros)]
@@ -373,6 +386,21 @@ mod tests {
                 Directive::Call {
                     package: "runtime".to_string(),
                     name: "morestack_noctxt".to_string(),
+                },
+                Directive::Nop
+            ]
+        );
+
+        let example_func_name = "aux";
+        assert_eq!(
+            directives!(
+                CALL {"main"}.{example_func_name};
+                NOP;
+            ),
+            vec![
+                Directive::Call {
+                    package: "main".to_string(),
+                    name: "aux".to_string(),
                 },
                 Directive::Nop
             ]
