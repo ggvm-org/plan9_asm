@@ -45,29 +45,33 @@ macro_rules! directives_inner {
     };
 
     // ADDQ	[16(AX)], [16(SP)]
-    ($directives:ident, ADDQ [$($left:tt)+] , [$($right:tt)*]; $($rest:tt)*) => {{
-        let (left, right) = binary_op!([$($left)+], [$($right)+]);
+    ($directives:ident, ADDQ $left:tt , $right:tt; $($rest:tt)*) => {{
+        let left = new_operand!($left);
+        let right = new_operand!($right);
         $directives.push($crate::Directive::Addq(left, right));
         directives_inner!($directives, $($rest)*);
     }};
 
     // SUBQ	[16(AX)], [16(SP)]
-    ($directives:ident, SUBQ [$($left:tt)+] , [$($right:tt)*]; $($rest:tt)*) => {{
-        let (left, right) = binary_op!([$($left)+], [$($right)+]);
+    ($directives:ident, SUBQ $left:tt , $right:tt; $($rest:tt)*) => {{
+        let left = new_operand!($left);
+        let right = new_operand!($right);
         $directives.push($crate::Directive::Subq(left, right));
         directives_inner!($directives, $($rest)*);
     }};
 
     // CMPQ	[16(AX)], [16(SP)]
-    ($directives:ident, CMPQ [$($left:tt)+] , [$($right:tt)*]; $($rest:tt)*) => {{
-        let (left, right) = binary_op!([$($left)+], [$($right)+]);
+    ($directives:ident, CMPQ $left:tt , $right:tt; $($rest:tt)*) => {{
+        let left = new_operand!($left);
+        let right = new_operand!($right);
         $directives.push($crate::Directive::Cmpq(left, right));
         directives_inner!($directives, $($rest)*);
     }};
 
     // MOVQ	[16(AX)], [16(SP)]
-    ($directives:ident, MOVQ [$($left:tt)+] , [$($right:tt)*]; $($rest:tt)*) => {{
-        let (left, right) = binary_op!([$($left)+], [$($right)+]);
+    ($directives:ident, MOVQ $left:tt, $right:tt; $($rest:tt)*) => {{
+        let left = new_operand!($left);
+        let right = new_operand!($right);
         $directives.push($crate::Directive::Movq(left, right));
         directives_inner!($directives, $($rest)*);
     }};
@@ -178,17 +182,10 @@ macro_rules! text_inner {
 
 #[macro_export(local_inner_macros)]
 #[doc(hidden)]
-macro_rules! binary_op {
-    ([$($left:tt)+] , [$($right:tt)*]) => {{
-        let left_op = new_operand!($($left)+);
-        let right_op = new_operand!($($right)*);
-       (left_op, right_op)
-    }};
-}
-
-#[macro_export(local_inner_macros)]
-#[doc(hidden)]
 macro_rules! new_operand {
+    ([$($op:tt)+]) => {
+        new_operand!($($op)+)
+    };
     ($offset:tt($register_variant:ident)) => {
         $crate::operand::Operand::RegisterWithOffset(new_register_with_offset!($offset(
             $register_variant
@@ -357,22 +354,6 @@ mod tests {
                 Directive::Nop,
             ]
         )
-    }
-    #[test]
-    fn binary_op() {
-        assert_eq!(
-            binary_op!([16(SP)], [32(AX)]),
-            (
-                Operand::RegisterWithOffset(RegisterWithOffset {
-                    offset: 16,
-                    register: crate::Register::SP
-                }),
-                Operand::RegisterWithOffset(RegisterWithOffset {
-                    offset: 32,
-                    register: crate::Register::AX
-                })
-            )
-        );
     }
 
     #[test]
