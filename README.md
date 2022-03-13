@@ -11,3 +11,7 @@ Just run `cargo run --example simple`
 [dependencies]
 plan9_asm = "0.4"
 ```
+
+# TODO
+- Add more directives
+- Support no_std
